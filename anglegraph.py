@@ -16,9 +16,9 @@ for r, d, f in os.walk(path):
 
 for i in range(len(files)):
     #print(f)
-    if i > 50:
-        break
     data = pd.read_csv(files[i], sep="\t")
+    if data[data['instruction']!=" Rest"].instruction.tolist()[0] != " Focus":
+        continue
     #data[data['instruction']!=" Focus"].plot(kind='scatter', x='onset', y='needle_position')
     orig = data
     intermissions = data[data['instruction']==" Push Button"].index.tolist()
@@ -47,11 +47,11 @@ for i in range(len(files)):
             data.loc[idx, 'right_text'] = " Focused"
         if data.loc[idx, 'instruction'] != " Focus":
             data.loc[idx, 'needle_position'] = None
-    plt.plot(data['onset'], data['needle_position'])
+    plt.plot(data.index, data['needle_position'])
     #with pd.option_context('display.max_rows', None):  # more options can be specified also
     #    print(data)
     #data[data['instruction']!=" Focus"].plot(kind='line', x='onset', y='needle_position')
-plt.vlines(x=data[data['instruction']==" Push Button"].onset.tolist(), ymin=0, ymax=180)
+plt.vlines(x=data[data['instruction']==" Push Button"].index.tolist(), ymin=0, ymax=180)
 plt.show()
 #print(trialOrder)
 #remianing steps
