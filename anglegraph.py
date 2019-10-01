@@ -5,7 +5,7 @@ trialOrders = {}
 
 import os
 
-path = '/Users/Conrad/research/events'
+path = '../../data/events'
 
 files = []
 # r=root, d=directories, f = files
@@ -47,7 +47,7 @@ for i in range(len(files)):
             data.loc[idx, 'right_text'] = " Focused"
         if data.loc[idx, 'instruction'] != " Focus":
             data.loc[idx, 'needle_position'] = None
-    plt.plot(data.index, data['needle_position'])
+    plt.plot(data.index, data['needle_position'], linewidth=0.75)
     #with pd.option_context('display.max_rows', None):  # more options can be specified also
     #    print(data)
     #data[data['instruction']!=" Focus"].plot(kind='line', x='onset', y='needle_position')
@@ -55,9 +55,7 @@ plt.vlines(x=data[data['instruction']==" Push Button"].index.tolist(), ymin=0, y
 plt.show()
 #print(trialOrder)
 #remianing steps
-#reverse angle measurement appropriately
 #color graph
-#scale up to work with all subjects
 #graph all subjects
 #???
 #profit
