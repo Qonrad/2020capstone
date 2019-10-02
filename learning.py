@@ -46,26 +46,29 @@ imp = Imputer(missing_values='NaN', strategy='mean', axis=1)
 X = imp.fit_transform(X)
 #print(X)
 
-#print("Running SelectKBest feature selection.")
-#print("Selecting 25 features.")
+num_features = 20
+print("Running SelectKBest feature selection.")
+print("Selecting", num_features, "features.")
 #only using top 25 features
-#X_new = SelectKBest(mutual_info_regression, k=25).fit_transform(X, y)
-#print(X_new.shape)
+X_new = X#SelectKBest(mutual_info_regression, k=num_features).fit_transform(X, y)
+print(X_new.shape)
 
 from sklearn.svm import SVR
 print("Attempting SVR")
 clf = SVR(kernel='poly', gamma='scale', C=1.0, epsilon=0.2, verbose=True)
-clf.fit(X, y)
+clf.fit(X_new, y)
 print(clf.get_params())
-print(clf.score(X, y))
+print(clf.score(X_new, y))
 
-"""
+
 print("attempting RidgeCV")
 from sklearn.linear_model import RidgeCV
 clf = RidgeCV(alphas=[1e-3, 1e-2, 1e-1, 1]).fit(X_new, y)
+print(clf.coef_)
+print(np.argwhere(clf.coef_ > 0.01))
 print(clf.score(X_new, y))
 print(clf.get_params())
-"""
+
 """
 print("Running LassoCV.")
 from sklearn.linear_model import LassoCV
