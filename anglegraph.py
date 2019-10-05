@@ -16,7 +16,7 @@ for r, d, f in os.walk(path):
         if '.tsv' in file:
             files.append(os.path.join(r, file))
 
-outputdict = {'ID':[], 'skourascore_down': [], 'boxcarscore_down': [], 'skourascore_down_90': [], 'boxcarscore_down_90': []}
+outputdict = {'ID':[], 'skourascore_down': [], 'boxcarscore_down': [], 'skourascore_down_90': [], 'boxcarscore_down_90': [], 'areascore_down': [], 'areascore_down_90': []}
 
 for i in range(len(files)):
     #if i > 1:
@@ -50,6 +50,8 @@ for i in range(len(files)):
     down_skourascores_90 = []
     down_boxcarscores = []
     down_boxcarscores_90 = []
+    down_areascores = []
+    down_areascores_90 = []
     for trialnum in range(12):
         if trialOrder[(trialnum * 2) + 1] == "Focus":
             #print("Trial", trialnum, "had instruction == Focus")
@@ -72,9 +74,15 @@ for i in range(len(files)):
             boxcarscore = scipy.stats.pearsonr(this_trial.needle_position.values, boxcar)
             #print(boxcarscore)
             down_boxcarscores += [boxcarscore]
+            #calculating areascore
+            worst = np.full(length, 180) #making array for the worst possible subject (maximum area)
+            worst_area = np.trapz(worst)
+            areascore = (worst_area - np.trapz(this_trial.needle_position.values)) / worst_area
+            down_areascores += [areascore]
             if length == 45:
                 down_skourascores_90 += [skourascore]
                 down_boxcarscores_90 += [boxcarscore]
+                down_areascores_90 += [areascore]
     #print(down_skourascores)
     #parsing filename to find NKI subject ID
     subpos = files[i].find('sub-A')
@@ -82,6 +90,8 @@ for i in range(len(files)):
     outputdict['ID'] += [subjID]
     outputdict['skourascore_down'] += [np.mean(down_skourascores)]
     outputdict['boxcarscore_down'] += [np.mean(down_boxcarscores)]
+    outputdict['areascore_down'] += [np.mean(down_areascores)]
+    outputdict['areascore_down_90'] += [np.mean(down_areascores_90)]
     outputdict['skourascore_down_90'] += [np.mean(down_skourascores_90)]
     outputdict['boxcarscore_down_90'] += [np.mean(down_boxcarscores_90)]
 

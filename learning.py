@@ -31,7 +31,7 @@ for i in range(len(files)):
     #print(X)
     X = np.concatenate((X, longarray), axis=0)
     #print(longarray)
-y = scores.skourascore_down.values
+y = scores.areascore_down.values
 #print(X.shape)
 #print(y.shape)
 X = X[1:] #removing zeros first element
@@ -46,11 +46,11 @@ imp = Imputer(missing_values='NaN', strategy='mean', axis=1)
 X = imp.fit_transform(X)
 #print(X)
 
-#num_features = 20
-#print("Running SelectKBest feature selection.")
-#print("Selecting", num_features, "features.")
+num_features = 30
+print("Running SelectKBest feature selection.")
+print("Selecting", num_features, "features.")
 #only using top 25 features
-X_new = X#SelectKBest(mutual_info_regression, k=num_features).fit_transform(X, y)
+X_new = SelectKBest(mutual_info_regression, k=num_features).fit_transform(X, y)
 print(X_new.shape)
 
 from sklearn.svm import SVR
@@ -69,12 +69,10 @@ print(np.argwhere(clf.coef_ > 0.01))
 print("R-squared =", clf.score(X_new, y))
 print(clf.get_params())
 
-"""
 print("Running LassoCV.")
 from sklearn.linear_model import LassoCV
-reg = LassoCV(cv=5, random_state=0, n_jobs=4).fit(X, y)
+reg = LassoCV(cv=5, random_state=0, n_jobs=4).fit(X_new, y)
 print(reg.get_params())
-print("R-squared = ", reg.score(X, y))
+print("R-squared = ", reg.score(X_new, y))
 print("alpha = ", reg.alpha_)
 print("w =", reg.coef_)
-"""
