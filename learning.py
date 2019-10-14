@@ -4,9 +4,9 @@ import os
 import pandas as pd
 import numpy as np
 #/Users/Conrad/Box/Conrad Leonik Capstone/data/connectivity/connectivity_matrices/resultsROI_Subject002_Condition001.mat
-path = '../../data/connectivity/connectivity_matrices'
+path = './connectivity/connectivity_matrices'
 scores = pd.read_csv("./out.tsv", sep="\t")
-conn_key = pd.read_csv("../../data/connectivity/conn_key")
+conn_key = pd.read_csv("./connectivity/conn_key")
 files = []
 #fixing subject IDs in conn_key
 for idx, row in conn_key.iterrows():

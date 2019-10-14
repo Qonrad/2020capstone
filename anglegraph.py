@@ -7,7 +7,7 @@ trialOrders = {}
 
 import os
 
-path = '../../data/events'
+path = './events'
 
 files = []
 # r=root, d=directories, f = files
