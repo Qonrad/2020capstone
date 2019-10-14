@@ -31,7 +31,7 @@ for i in range(len(files)):
     #print(X)
     X = np.concatenate((X, longarray), axis=0)
     #print(longarray)
-y = scores.areascore_down.values
+y = scores.skourascore_down.values
 #print(X.shape)
 #print(y.shape)
 X = X[1:] #removing zeros first element
