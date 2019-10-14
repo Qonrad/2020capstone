@@ -25,7 +25,6 @@ for i in range(len(files)):
     #if data[data['instruction']!=" Rest"].instruction.tolist()[0] != " Focus": #skipping subjects that don't focus first
     #    continue
     #data[data['instruction']!=" Focus"].plot(kind='scatter', x='onset', y='needle_position')
-    orig = data
     intermissions = data[data['instruction']==" Push Button"].index.tolist()
     rests = data[data['instruction']==" Rest"]
     first_scan_index = data[data['instruction']!=" Rest"].index.tolist()[0] - 1
