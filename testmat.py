@@ -3,9 +3,9 @@ import os
 import pandas as pd
 import numpy as np
 #/Users/Conrad/Box/Conrad Leonik Capstone/data/connectivity/connectivity_matrices/resultsROI_Subject002_Condition001.mat
-path = '../../data/connectivity/connectivity_matrices'
+path = './connectivity/connectivity_matrices'
 scores = pd.read_csv("./out.tsv", sep="\t")
-conn_key = pd.read_csv("../../data/connectivity/conn_key")
+conn_key = pd.read_csv("./connectivity/conn_key")
 files = []
 #fixing subject IDs in conn_key
 for idx, row in conn_key.iterrows():
@@ -31,6 +31,11 @@ for i in range(len(files)):
     X = np.concatenate((X, longarray), axis=0)
     #print(longarray)
 X = X[1:]
+print(scores.ID.values[1])
+for i in range(len(X[1])):
+    print(i, X[1][i])
+    if i > 20:
+        break
 y = scores.skourascore_down.values
 #print(X.shape)
 #print(y.shape)
