@@ -59,31 +59,36 @@ from sklearn.svm import SVR
 X = np.load("imputed_matrices.npy")
 y = np.load("skourascores.npy")
 
-num_features = 80
-print("Running SelectKBest feature selection.")
-print("Selecting", num_features, "features.")
+#num_features = 30
+#print("Running SelectKBest feature selection.")
+#print("Selecting", num_features, "features.")
 #only using top 25 features
-X = SelectKBest(mutual_info_regression, k=num_features).fit_transform(X, y)
+#X = SelectKBest(mutual_info_regression, k=num_features).fit_transform(X, y)
 
 # Split the dataset in two equal parts
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.15, random_state=0)
+    X, y, test_size=0.15)
 
 # Set the parameters by cross-validation
+feats = len(X[0])
+subs = len(y)
 
-tuned_parameters = [{'kernel': ['poly'], 'gamma': [1e-3, 1e-4],
-                     'C': [1, 10, 100, 1000]},
-                    {'kernel': ['linear'], 'C': [1, 10, 100, 1000]}]
+tuned_parameters = [{'kernel': ['linear'], 'C': [0.0001, 0.001, 0.1, 1, 10, 100, 1000]}]
+num_features = [None, round(feats/subs) * 10, round(feats/subs), subs, 30]
 
-scores = ['explained_variance', 'max_error', 'r2']
-
-for score in scores:
-    print("# Tuning hyper-parameters for %s" % score)
-    print()
+for num in num_features:
+    if num != None:
+        print("Selecting", num, "features.")
+        selection = SelectKBest(mutual_info_regression, k=num).fit(X_train, y_train)
+        selected_training = selection.transform(X_train)
+        selected_test = selection.transform(X_test)
+    else:
+        selected_training = X_train
+        selected_test = X_test
 
     clf = GridSearchCV(SVR(), tuned_parameters, cv=5,
-                       scoring=score)
-    clf.fit(X_train, y_train)
+                       scoring='r2')
+    clf.fit(selected_training, y_train)
 
     print("Best parameters set found on development set:")
     print()
@@ -103,7 +108,7 @@ for score in scores:
     print("The model is trained on the full development set.")
     print("The scores are computed on the full evaluation set.")
     print()
-    y_true, y_pred = y_test, clf.predict(X_test)
+    y_true, y_pred = y_test, clf.predict(selected_test)
     print(r2_score(y_true, y_pred))
     print()
 
