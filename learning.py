@@ -57,8 +57,27 @@ from sklearn.metrics import r2_score
 from sklearn.svm import SVR
 from sklearn.pipeline import Pipeline
 
-X = np.load("imputed_matrices.npy")
-y = np.load("skourascores.npy")
+conn_key = pd.read_csv("./connectivity/conn_key")
+for idx, row in conn_key.iterrows():
+    conn_key.loc[idx, 'ID'] = "A000" + str(conn_key.loc[idx, 'ID'])
+scores = pd.read_csv("./out.tsv", sep="\t")
+scores = pd.merge(scores, conn_key, how='right', on='ID')
+print(scores)
+
+X = np.load("connectomes.npy")
+y = scores.areascore_down.values
+print(y)
+
+print(type(X))
+
+subjnum = 85
+print("Subject number", subjnum)
+
+#print(y[subjnum-1])
+for i in range(len(X[subjnum-1])):
+    #print(i, X[subjnum-1][i])
+    if i > 20:
+        break
 
 #num_features = 30
 #print("Running SelectKBest feature selection.")
@@ -66,16 +85,22 @@ y = np.load("skourascores.npy")
 #only using top 25 features
 #X = SelectKBest(mutual_info_regression, k=num_features).fit_transform(X, y)
 
-# Split the dataset in two equal parts
+# Split the dataset in two parts
 
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.15, random_state=0)
+    X, y, test_size=0.15)
+"""
+clf = SVR(kernel='poly', C=0.0001)
+clf.fit(X_train, y_train)
+print(clf.score(X_test, y_test))
 
+exit()
+"""
 # Set the parameters by cross-validation
 feats = len(X[0])
 subs = len(y)
 
-#tuned_parameters = [{'kernel': ['linear'], 'C': [0.0001, 0.001, 0.1, 1, 10, 100, 1000]}]
+#tuned_parameters = [{'kernel': ['linear', 'poly', 'rbf'], 'C': [0.0001, 0.001, 0.1, 1, 10, 100, 1000]}]
 
 num_features = [feats, round(feats/subs) * 10, round(feats/subs), subs, 30]
 

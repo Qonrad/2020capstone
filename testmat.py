@@ -12,30 +12,34 @@ for idx, row in conn_key.iterrows():
     conn_key.loc[idx, 'ID'] = "A000" + str(conn_key.loc[idx, 'ID'])
 #getting the subset of subjects with scores (only ones that also have connectivity matrices)
 scores = pd.merge(scores, conn_key, how='right', on='ID')
-print(scores)
 # r=root, d=directories, f = files
 for r, d, f in os.walk(path):
     for file in f:
         if 'resultsROI' in file:
             files.append(os.path.join(r, file))
-X = np.array([np.zeros(164 * 167)]) #quite possibly unnecessarily complicated, unsure how to do this
+X = np.array([np.zeros(13366)]) #quite possibly unnecessarily complicated, unsure how to do this
 #it absolutely must be checked that the scores match up properly with the correct connectivity matrix
+
 for i in range(len(files)):
-    #print(files[i])
-    #print(scores.ID.values[i])
     connectome = loadmat(files[i])
-    #quite possibly unnecessarily complicated, unsure how to do this
-    longarray = np.array([np.array(connectome['Z'].reshape(164 * 167).tolist())])
-    #print(longarray)
-    #print(X)
-    X = np.concatenate((X, longarray), axis=0)
-    #print(longarray)
+    mat = connectome['Z']
+    mat = mat[:,0:len(mat[0]) - 3]
+    brief = np.array([])
+    for j in range(len(mat)):
+        #print(mat[j][j+1:])
+        brief = np.concatenate((brief, mat[j][j+1:]), axis=0)
+    #print(brief)
+    temp = np.array([brief.tolist()])
+    X = np.concatenate((X, temp), axis=0)
 X = X[1:]
-print(scores.ID.values[1])
-for i in range(len(X[1])):
-    print(i, X[1][i])
+np.save("connectomes", X)
+subjnum = 85
+print("Subject number", subjnum)
+
+print(files[subjnum-1])
+print(scores.ID.values[subjnum-1])
+for i in range(len(X[subjnum-1])):
+    print(i, X[subjnum-1][i])
     if i > 20:
         break
 y = scores.skourascore_down.values
-#print(X.shape)
-#print(y.shape)
