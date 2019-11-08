@@ -50,6 +50,7 @@ np.save("imputed_matrices", X)
 exit()
 #print(X)
 """
+from sklearn import preprocessing
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
@@ -62,13 +63,24 @@ for idx, row in conn_key.iterrows():
     conn_key.loc[idx, 'ID'] = "A000" + str(conn_key.loc[idx, 'ID'])
 scores = pd.read_csv("./out.tsv", sep="\t")
 scores = pd.merge(scores, conn_key, how='right', on='ID')
+ages = pd.read_csv("ages.csv")
+ages = pd.merge(scores['ID'], ages, how='left', on='ID')
+print(ages)
 print(scores)
 
 X = np.load("connectomes.npy")
-y = scores.areascore_down.values
-print(y)
+ages = ages.AGE.values
+ages = ages.reshape(-1,1)
+X = np.concatenate((ages, X), axis=1)
+y = scores.skourascore_down.values
 
-print(type(X))
+#sanity test
+#print(y.reshape(-1, 1))
+#X = np.concatenate((ages, X), axis=1)
+
+
+
+
 
 subjnum = 85
 print("Subject number", subjnum)
@@ -87,6 +99,16 @@ for i in range(len(X[subjnum-1])):
 
 # Split the dataset in two parts
 
+
+print("Before scaling")
+print(X)
+scaler = preprocessing.StandardScaler().fit(X)
+X = scaler.transform(X)
+print("After scaling")
+print(X)
+#yscaler = preprocessing.StandardScaler().fit(y)
+#y = yscaler.transform(y)
+
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.15)
 """
@@ -99,9 +121,13 @@ exit()
 # Set the parameters by cross-validation
 feats = len(X[0])
 subs = len(y)
+"""
+clf = SVR(kernel='linear', C=1.0)
+clf.fit(X_train, y_train)
+print(clf.score(X_test, y_test))
 
-#tuned_parameters = [{'kernel': ['linear', 'poly', 'rbf'], 'C': [0.0001, 0.001, 0.1, 1, 10, 100, 1000]}]
-
+exit()
+"""
 num_features = [feats, round(feats/subs) * 10, round(feats/subs), subs, 30]
 
 pipe = Pipeline([
@@ -110,7 +136,7 @@ pipe = Pipeline([
     ('svr', SVR(verbose=10))
 ])
 
-N_FEATURES_OPTIONS = ["all", round(feats/subs) * 10, round(feats/subs), subs, 30]
+N_FEATURES_OPTIONS = [30, "all", round(feats/subs) * 10, round(feats/subs), subs]
 C_OPTIONS = [0.0001, 0.001, 0.1, 1, 10, 100, 1000]
 param_grid = [
     {
