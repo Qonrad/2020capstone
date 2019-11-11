@@ -11,6 +11,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import r2_score
 from sklearn.svm import SVR
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import OneHotEncoder
 
 #reading scores and filtering them by the conn_key
 conn_key = pd.read_csv("./connectivity/conn_key")
@@ -26,13 +27,31 @@ ages = pd.merge(scores['ID'], ages, how='left', on='ID')
 ages = ages.AGE.values
 ages = ages.reshape(-1,1)
 
-#read connectomes and add ages
+#read chris_feats, filter only ones in conn_key, and drop columns with missing data
+chris_feats = pd.read_csv("chris_feats.csv")
+chris_feats = pd.merge(chris_feats, conn_key, how='right', on='ID')
+chris_feats = chris_feats.dropna(axis='columns')
+
+#extract binary features and encode them
+chris_bools = chris_feats[['Sex', 'Clinical_Status', 'DEM_003']]
+chris_bools = chris_bools.values
+enc = OneHotEncoder(handle_unknown='ignore')
+chris_bools = enc.fit_transform(chris_bools).toarray()
+
+#extract non-binary features
+chris_nonbools = chris_feats.drop(columns=['ID', 'Sex', 'Clinical_Status', 'DEM_003']).values
+
+#read connectomes and add ages and chris_nonbools
 X = np.load("connectomes.npy")
 X = np.concatenate((ages, X), axis=1)
+X = np.concatenate((chris_nonbools, X), axis=1)
 
 #scaling features
 scaler = preprocessing.StandardScaler().fit(X)
 X = scaler.transform(X)
+
+#add chris_bools
+X = np.concatenate((chris_bools, X), axis=1)
 
 # Split the dataset in two parts
 X_train, X_test, y_train, y_test = train_test_split(
