@@ -56,7 +56,6 @@ X_train, X_test, y_train, y_test = train_test_split(
 # Set the parameters by cross-validation
 feats = len(X[0])
 subs = len(y)
-num_features = [feats, round(feats/subs) * 10, round(feats/subs), subs, 30]
 
 pipe = Pipeline([
     # the reduce_dim stage is populated by the param_grid
@@ -64,7 +63,7 @@ pipe = Pipeline([
     ('svr', SVR(verbose=10))
 ])
 
-N_FEATURES_OPTIONS = [30, "all", round(feats/subs) * 10, round(feats/subs), subs]
+N_FEATURES_OPTIONS = [5, 30, "all", round(feats/subs) * 10, round(feats/subs), subs]
 C_OPTIONS = [0.0001, 0.001, 0.1, 1, 10, 100, 1000]
 param_grid = [
     {
