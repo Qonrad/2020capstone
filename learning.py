@@ -8,6 +8,7 @@ from sklearn.metrics import r2_score
 from sklearn.svm import SVR
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
+import makefeats
 
 #reading scores and filtering them by the conn_key
 conn_key = pd.read_csv("./connectivity/conn_key")
@@ -65,6 +66,7 @@ pipe = Pipeline([
 
 N_FEATURES_OPTIONS = [5, 30, "all", round(feats/subs) * 10, round(feats/subs), subs]
 C_OPTIONS = [0.0001, 0.001, 0.1, 1, 10, 100, 1000]
+C_OPTIONS.reverse()
 param_grid = [
     {
         'reduce_dim__k': N_FEATURES_OPTIONS,
@@ -96,3 +98,8 @@ print("The scores are computed on", len(y_test), "subjects.")
 print()
 y_true, y_pred = y_test, grid.predict(X_test)
 print(r2_score(y_true, y_pred))
+
+#output which features were selected
+print(grid.best_estimator_)
+print(grid.best_estimator_['reduce_dim'].get_support(indices=True))
+makefeats.convert_support(grid.best_estimator_['reduce_dim'].get_support(indices=True), feats - 13366)
