@@ -1,11 +1,7 @@
 from sklearn.feature_selection import SelectKBest, mutual_info_regression
-from scipy.io import loadmat
-from scipy.stats import pearsonr, spearmanr
-import os
 import pandas as pd
 import numpy as np
 from sklearn import preprocessing
-from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import r2_score
