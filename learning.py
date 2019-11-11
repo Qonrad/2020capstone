@@ -15,7 +15,7 @@ for idx, row in conn_key.iterrows():
     conn_key.loc[idx, 'ID'] = "A000" + str(conn_key.loc[idx, 'ID'])
 scores = pd.read_csv("./out.tsv", sep="\t")
 scores = pd.merge(scores, conn_key, how='right', on='ID')
-y = scores.skourascore_down.values
+y = scores.chris_down.values
 
 #read ages and filter them by IDs in scores
 ages = pd.read_csv("ages.csv")
