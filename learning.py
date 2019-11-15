@@ -9,6 +9,7 @@ from sklearn.svm import SVR
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 import makefeats
+INCLUDE_MATRICES_AT_END = False
 
 #reading scores and filtering them by the conn_key
 conn_key = pd.read_csv("./connectivity/conn_key")
@@ -38,10 +39,13 @@ chris_bools = enc.fit_transform(chris_bools).toarray()
 #extract non-binary features
 chris_nonbools = chris_feats.drop(columns=['ID', 'Sex', 'Clinical_Status', 'DEM_003']).values
 
-#read connectomes and add ages and chris_nonbools
-X = np.load("connectomes.npy")
-X = np.concatenate((ages, X), axis=1)
-X = np.concatenate((chris_nonbools, X), axis=1)
+#read ages and chris_nonbools
+X = np.concatenate((chris_nonbools, ages), axis=1)
+
+#if appropriate, add connectivity matrices
+if INCLUDE_MATRICES_AT_END:
+    print("Adding connectivity matrices at the end.")
+    X = np.concatenate((X, np.load("connectomes.npy")), axis=1)
 
 #scaling features
 scaler = preprocessing.StandardScaler().fit(X)
@@ -64,7 +68,12 @@ pipe = Pipeline([
     ('svr', SVR(verbose=10))
 ])
 
-N_FEATURES_OPTIONS = [5, 30, "all", round(feats/subs) * 10, round(feats/subs), subs]
+#setting feature_selection params appropriately
+if INCLUDE_MATRICES_AT_END:
+    N_FEATURES_OPTIONS = [5, 30, "all", round(feats/subs) * 10, round(feats/subs), subs]
+else:
+    N_FEATURES_OPTIONS = [5, "all"]
+
 C_OPTIONS = [0.0001, 0.001, 0.1, 1, 10, 100, 1000]
 C_OPTIONS.reverse()
 param_grid = [
@@ -98,8 +107,3 @@ print("The scores are computed on", len(y_test), "subjects.")
 print()
 y_true, y_pred = y_test, grid.predict(X_test)
 print(r2_score(y_true, y_pred))
-
-#output which features were selected
-print(grid.best_estimator_)
-print(grid.best_estimator_['reduce_dim'].get_support(indices=True))
-makefeats.convert_support(grid.best_estimator_['reduce_dim'].get_support(indices=True), feats - 13366)
