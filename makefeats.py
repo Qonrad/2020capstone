@@ -63,7 +63,3 @@ def convert_support(sup, extralen, matatend=True):
                 print(s, "is the connectivity between", convert_to_ROI_name(names[0], s - extralen))
             else:
                 print(s, "is not part of the connectivity matrix")
-
-convert_support([13366], 1)
-#print(read_connectivity(mats))
-#print(np.load("connectomes.npy"))
