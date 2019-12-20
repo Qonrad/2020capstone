@@ -20,7 +20,7 @@ for r, d, f in os.walk(path):
         if '.tsv' in file:
             files.append(os.path.join(r, file))
 
-outputdict = {'ID':[], 'skourascore_down': [], 'skourascore_down_90': []}
+outputdict = {'ID':[], 'skourascore_down': [], 'skourascore_down_90': [], 'skourascore_up': [], 'skourascore_up_90': [], 'skourascore_both': [], 'skourascore_both_90': []}
 
 for i in range(len(files)):
     #parsing filename to find NKI subject ID
@@ -41,41 +41,55 @@ for i in range(len(files)):
         this_trial = data[(times[trialnum] + 1):times[trialnum + 1]][data['feedback']=="On"]
         trialOrder += [this_trial['left_text'].tolist()[0][1:] + "-" + this_trial['right_text'].tolist()[0][1:], this_trial['instruction'].tolist()[0][1:]]
     #correcting needle_positions for the counterbalanced polarity
-    for idx, row in data.iterrows():
-        if data.loc[idx, 'instruction'] != " Focus": #remove data values on rows where they are told to wander
-            data.loc[idx, 'needle_position'] = None
     #data at this point is cleaned up and reversed (for uncounterbalancing)
     #calculating neurofeedback score for this subject
     down_skourascores = []
     down_skourascores_90 = []
+    up_skourascores = []
+    up_skourascores_90 = []
+    both_skourascores = []
+    both_skourascores_90 = []
     print(trialOrder)
     print(times)
     for trialnum in range(12):
+        #this_trial is the data just from the trial of trialnum
+        this_trial = data[(times[trialnum] + 1):times[trialnum + 1]]#[data['feedback']=="On"]
+        length = len(this_trial.needle_position.values)
+        print("Trial", trialnum + 1, "was", (length-1)*2, "seconds long and contained", length, "needle_position values.")
+        print("needle_position values")
+        print(this_trial.needle_position.values)
+        print(trialOrder[(trialnum * 2)])
         if trialOrder[(trialnum * 2) + 1] == "Focus":
-            #this_trial is the data just from the trial of trialnum
-            this_trial = data[(times[trialnum] + 1):times[trialnum + 1]]#[data['feedback']=="On"]
-            length = len(this_trial.needle_position.values)
-            print("Trial", trialnum + 1, "was", (length-1)*2, "seconds long and contained", length, "needle_position values.")
-            print("needle_position values")
-            print(this_trial.needle_position.values)
-            print(trialOrder[(trialnum * 2)])
             if trialOrder[(trialnum * 2)] == 'Focused-Wandering':
                 idealized = np.linspace(90, 90 + (length - 1), num=length)
-                print("Idealized needle_positions")
-                print(idealized)
             elif trialOrder[(trialnum * 2)] == 'Wandering-Focused':
                 idealized = np.linspace(90, 90 - (length - 1), num=length)
-                print("Idealized needle_positions")
-                print(idealized)
             skourascore = scipy.stats.pearsonr(this_trial.needle_position.values, idealized)[0]
-            print("Score for this trial:", skourascore)
             down_skourascores += [skourascore]
             if length == 46:
                 down_skourascores_90 += [skourascore]
+        elif trialOrder[(trialnum * 2) + 1] == "Wander":
+            if trialOrder[(trialnum * 2)] == 'Focused-Wandering':
+                idealized = np.linspace(90, 90 - (length - 1), num=length)
+            elif trialOrder[(trialnum * 2)] == 'Wandering-Focused':
+                idealized = np.linspace(90, 90 + (length - 1), num=length)
+            skourascore = scipy.stats.pearsonr(this_trial.needle_position.values, idealized)[0]
+            up_skourascores += [skourascore]
+            if length == 46:
+                up_skourascores_90 += [skourascore]
+        else:
+            print("something is horribly wrong")
+        both_skourascores += [skourascore]
+        if length == 46:
+            both_skourascores_90 += [skourascore]
     print(down_skourascores)
     outputdict['ID'] += [subjID]
     outputdict['skourascore_down'] += [np.mean(down_skourascores)]
     outputdict['skourascore_down_90'] += [np.mean(down_skourascores_90)]
+    outputdict['skourascore_up'] += [np.mean(up_skourascores)]
+    outputdict['skourascore_up_90'] += [np.mean(up_skourascores_90)]
+    outputdict['skourascore_both'] += [np.mean(both_skourascores)]
+    outputdict['skourascore_both_90'] += [np.mean(both_skourascores_90)]
 
     print(subjID, np.mean(down_skourascores))
 df = pd.DataFrame(outputdict)
