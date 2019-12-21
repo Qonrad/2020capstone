@@ -13,6 +13,15 @@ path = './events'
 def skourascore():
     return
 
+
+def find_empty_times(data):
+    intermissions = data[data['instruction']==" Push Button"].index.tolist()
+    rests = data[data['instruction']==" Rest"]
+    first_scan_index = data[data['instruction']!=" Rest"].index.tolist()[0] - 1
+    first_rest_at_end = data[data['instruction']!=" Rest"].index.tolist()[-1] + 1
+    times = [first_scan_index] + intermissions + [first_rest_at_end]
+    return times
+
 files = []
 # r=root, d=directories, f = files
 for r, d, f in os.walk(path):
@@ -31,11 +40,7 @@ for i in range(len(files)):
     #if data[data['instruction']!=" Rest"].instruction.tolist()[0] != " Focus": #skipping subjects that don't focus first
     #    continue
     #data[data['instruction']!=" Focus"].plot(kind='scatter', x='onset', y='needle_position')
-    intermissions = data[data['instruction']==" Push Button"].index.tolist()
-    rests = data[data['instruction']==" Rest"]
-    first_scan_index = data[data['instruction']!=" Rest"].index.tolist()[0] - 1
-    first_rest_at_end = data[data['instruction']!=" Rest"].index.tolist()[-1] + 1
-    times = [first_scan_index] + intermissions + [first_rest_at_end]
+    times = find_empty_times(data)
     trialOrder = []
     for trialnum in range(12):
         this_trial = data[(times[trialnum] + 1):times[trialnum + 1]][data['feedback']=="On"]
@@ -90,7 +95,6 @@ for i in range(len(files)):
     outputdict['skourascore_up_90'] += [np.mean(up_skourascores_90)]
     outputdict['skourascore_both'] += [np.mean(both_skourascores)]
     outputdict['skourascore_both_90'] += [np.mean(both_skourascores_90)]
-
     print(subjID, np.mean(down_skourascores))
 df = pd.DataFrame(outputdict)
 df = df.sort_values(by=['ID'])
