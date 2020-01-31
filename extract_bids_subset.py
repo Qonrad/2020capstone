@@ -22,16 +22,7 @@ print("total", counter, "files (with unique sub-IDs) matching the string in the 
 print(IDs)
 
 def sieve(dir, contentslist):
-    resultinglist = []
-    for entry in contentslist:
-        #print(entry)
-        if ("." in entry):
-            if ("DMNTRACKING" not in entry) and ("T1" not in entry):
-                resultinglist += [entry]
-        else:
-            if entry not in ["ses-NFB3", "anat", "func"]:
-                resultinglist += [entry]
-    return resultinglist
+    return []
 
 odirName = "/Users/mac637-jbj-100/conrad/bids_subset_test/"
 #copy specific other files necessary for bids
