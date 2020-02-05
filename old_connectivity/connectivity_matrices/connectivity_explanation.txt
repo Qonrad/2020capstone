@@ -1,0 +1,9 @@
+Results: Can I get from the toolbox the correlation ROI-to-ROI matrix for a single subject?
+
+You can find that information in the files:
+
+      conn_*/results/firstlevel/ANALYSIS_01/resultsROI_Subject###_Condition###.mat
+
+This file will contain a matrix Z with the ROI-to-ROI connectivity values (Fisher-transformed correlation coefficients). In particular the value Z(i,j) will contain the connectivity between source ROI 'i' and target ROI 'j'. The names of these ROIs can be read from the variables 'names' and 'names2', respectively, from the same .mat file. In other words, names{i} is the source ROI and names{j} is the target ROI corresponding to the Z(i,j) value. Note that source ROIs are all of the ROIs that you entered as sources in the first-level analysis step (which are typically a subset of all of the ROIs entered in the original Setup step). In contrast target ROIs are all of the ROIs entered in the Setup step. The ROIs are sorted so that the square matrix Z(:,1:size(Z,1)) will contain the connectivity among the source ROIs only.
+
+In addition, the file resultsROI_Condition*.mat in the same folder will contain the same values concatenated across all subjects (Z will be now a 3-dimensional matrix -ROIs by ROIs by subjects- of connectivity values).
