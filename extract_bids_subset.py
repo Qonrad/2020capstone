@@ -24,7 +24,7 @@ print(IDs)
 def sieve(dir, contentslist):
     return []
 
-odirName = "/Users/mac637-jbj-100/conrad/bids_subset_test/"
+odirName = "/Volumes/G-RAID/nfb_subset/"
 #copy specific other files necessary for bids
 addl_bids_files = ["/Volumes/G-RAID/RAW/RawDataBIDS/dataset_description.json",
 "/Volumes/G-RAID/RAW/RawDataBIDS/T1w.json",
@@ -48,7 +48,7 @@ for id in IDs:
         print("Directory " , dirName ,  " already exists")
 
 
-for root, dirs, files in os.walk("/Users/mac637-jbj-100/conrad/bids_subset_test/"):
+for root, dirs, files in os.walk("/Volumes/G-RAID/nfb_subset/"):
     for file in files:
         if ("DMNTRACKINGTRAIN" in file):
             fullpath = os.path.join(root, file)
