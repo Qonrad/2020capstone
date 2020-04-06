@@ -1,0 +1,3 @@
+-Make it work truly modularly (not require both types of features)
+-implement USE_GRANGER toggle in modular way
+-implement feature explanation
