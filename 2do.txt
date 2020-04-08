@@ -1,3 +1,5 @@
 -Make it work truly modularly (not require both types of features)
 -implement USE_GRANGER toggle in modular way
 -implement feature explanation
+-test using only control_group subjects
+-try with only binary clinical_status feature
