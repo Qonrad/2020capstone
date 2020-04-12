@@ -1,0 +1,13 @@
+taking some notes so that I don't forget the correlations that I do.
+
+granger seems to actually worsen performance, EXCEPT for (so far) SCALED end_avg_minus_start_avg on control group (removing subjects who slept in resting-scan). weird.
+When I include subjects that slept in the resting-state scan, the prediction becomes terrible. (but it still claims the causality is an important feature).
+It gets slightly worse if I remove
+
+Actually this works much better on slope. In the control group, with causality (and excluding subjects that slept in resting-state scan) it predicts slope 0.81. It's totally ruined if I don't only use control subjects. 
+
+In Skouras's performance (avg2ndhalf), everything seems to point to granger causality results being useless.
+
+
+
+
