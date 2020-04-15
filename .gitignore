@@ -2,3 +2,9 @@
 .ipynb_checkpoints/**
 __pycache__
 *.csv
+*.tsv
+timeseries/*
+timeseries_CSVs/*
+events/*
+new_matrices/*
+assessment_data_unfiltered/*
